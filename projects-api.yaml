@@ -1,0 +1,119 @@
+swagger: '2.0'
+info:
+  version: ''
+  title: Projects API
+  description: ''
+basePath: /projects/v1
+consumes:
+  - application/json
+produces:
+  - application/json
+paths:
+  '/projects/v1/{id}':
+    parameters:
+      - name: id
+        in: path
+        required: true
+        type: string
+    get:
+      operationId: GET-project
+      summary: Get project
+      tags:
+        - Projects
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/project-input'
+    put:
+      operationId: PUT-project
+      summary: Update project
+      tags:
+        - Projects
+      parameters:
+        - name: body
+          in: body
+          schema:
+            $ref: '#/definitions/project-input'
+            example:
+              id: 18b252ac-57c4-47a8-ba1b-b85b408e7431
+              name: Web dashboard
+              customerName: ACME Corp
+              freelancers:
+                - f664c3b8-11b6-434b-af43-0293064d80eb
+                - 3018dbb6-cd6a-4a56-ac12-1c6695cb4562
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/project-input'
+  /projects/v1:
+    get:
+      operationId: LIST-projects
+      summary: List projects
+      tags:
+        - Projects
+      responses:
+        '200':
+          description: ''
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/project-input'
+    post:
+      operationId: POST-project
+      summary: Create project
+      tags:
+        - Projects
+      parameters:
+        - name: body
+          in: body
+          schema:
+            $ref: '#/definitions/project-input'
+            example:
+              id: 18b252ac-57c4-47a8-ba1b-b85b408e7431
+              name: Web dashboard
+              customerName: ACME Corp
+              freelancers:
+                - f664c3b8-11b6-434b-af43-0293064d80eb
+                - 3018dbb6-cd6a-4a56-ac12-1c6695cb4562
+      responses:
+        '201':
+          description: ''
+          schema:
+            $ref: '#/definitions/project-input'
+definitions:
+  project-input:
+    title: project Input
+    type: object
+    properties:
+      id:
+        type: string
+        description: Project Identifier
+        format: uuid
+      name:
+        type: string
+        description: name of the project
+        pattern: '^[A-Za-z0-9- ]+$'
+      customerName:
+        type: string
+        description: Name of the customer for the project
+        pattern: '^[A-Za-z0-9- ]+$'
+      freelancers:
+        type: array
+        description: Freelancers working on this project
+        uniqueItems: true
+        items:
+          type: string
+          format: uuid
+    required:
+      - id
+      - name
+      - customerName
+    example:
+      id: 18b252ac-57c4-47a8-ba1b-b85b408e7431
+      name: Web dashboard
+      customerName: ACME Corp
+      freelancers:
+        - f664c3b8-11b6-434b-af43-0293064d80eb
+        - 3018dbb6-cd6a-4a56-ac12-1c6695cb4562

@@ -1,0 +1,101 @@
+swagger: '2.0'
+info:
+  version: ''
+  title: Freelancer API
+  description: ''
+basePath: /freelancers/v1
+consumes:
+  - application/json
+produces:
+  - application/json
+paths:
+  '/freelancers/v1/{id}':
+    parameters:
+      - name: id
+        in: path
+        required: true
+        type: string
+    get:
+      operationId: GET-freelancer
+      summary: Get Freelancer
+      tags:
+        - Freelancers
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/freelancer-input'
+    put:
+      operationId: PUT-freelancer
+      summary: Update Freelancer
+      tags:
+        - Freelancers
+      parameters:
+        - name: body
+          in: body
+          schema:
+            $ref: '#/definitions/freelancer-input'
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/freelancer-input'
+  /freelancers/v1:
+    get:
+      operationId: LIST-freelancers
+      summary: List Freelancers
+      tags:
+        - Freelancers
+      responses:
+        '200':
+          description: ''
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/freelancer-input'
+    post:
+      operationId: POST-freelancer
+      summary: Create Freelancer
+      tags:
+        - Freelancers
+      parameters:
+        - name: body
+          in: body
+          schema:
+            $ref: '#/definitions/freelancer-input'
+      responses:
+        '201':
+          description: ''
+          schema:
+            $ref: '#/definitions/freelancer-input'
+definitions:
+  freelancer-input:
+    title: Freelancer Input
+    type: object
+    properties:
+      id:
+        type: string
+        description: Identifier of Freelancer
+        format: uuid
+      name:
+        type: string
+        description: Name of the feeelancer
+        pattern: '^[A-Za-z0-9- ]+$'
+      rate:
+        type: number
+        description: Hourly rate of the freelancer
+        minimum: 0
+        maximum: 1000
+      currentProjectId:
+        type: string
+        description: The Current Project assigned to the freelancer
+        format: uuid
+    required:
+      - id
+      - name
+      - rate
+    example:
+      id: 060ab8ef-93c1-453f-aa28-701e37576c3c
+      name: Bob
+      rate: 100
+      currentProjectId: 63492c09-8c36-4f3f-8920-f9c85d258174

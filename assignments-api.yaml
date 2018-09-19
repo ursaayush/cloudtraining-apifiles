@@ -1,0 +1,75 @@
+swagger: '2.0'
+info:
+  version: ''
+  title: assignment API
+  description: This is an application API with orchestrates the assignment of projects to freelancers
+basePath: /assignments/v1
+consumes:
+  - application/json
+produces:
+  - application/json
+paths:
+  '/assignments/v1//{id}':
+    parameters:
+      - name: id
+        in: path
+        required: true
+        type: string
+    get:
+      operationId: GET-assignment
+      summary: Get assignment
+      tags:
+        - Assignments
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/assignment-input'
+  /assignments/v1/:
+    get:
+      operationId: LIST-assignments
+      summary: List assignments
+      tags:
+        - Assignments
+      responses:
+        '200':
+          description: ''
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/assignment-input'
+    post:
+      operationId: POST-assignment
+      summary: Create assignment
+      tags:
+        - Assignments
+      parameters:
+        - name: body
+          in: body
+          schema:
+            $ref: '#/definitions/assignment-input'
+      responses:
+        '201':
+          description: ''
+          schema:
+            $ref: '#/definitions/assignment-input'
+definitions:
+  assignment-input:
+    title: assignment Input
+    type: object
+    properties:
+      id:
+        type: string
+        format: uuid
+      freelancerId:
+        type: string
+        description: Freelancer to be assigned
+        format: uuid
+      projectId:
+        type: string
+        description: Project identifier for this assignment
+        format: uuid
+    required:
+      - id
+      - freelancerId
+      - projectId
