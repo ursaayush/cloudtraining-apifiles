@@ -9,7 +9,7 @@ consumes:
 produces:
   - application/json
 paths:
-  '/assignments/v1//{id}':
+  '/assignments/v1/{id}':
     parameters:
       - name: id
         in: path
