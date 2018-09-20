@@ -25,6 +25,14 @@ paths:
           description: ''
           schema:
             $ref: '#/definitions/freelancer-input'
+        '400':
+          description: ''
+          schema:
+            $ref: '#/definitions/error-400'
+        '409':
+          description: ''
+          schema:
+            $ref: '#/definitions/error-409'
     put:
       operationId: PUT-freelancer
       summary: Update Freelancer
@@ -40,6 +48,14 @@ paths:
           description: ''
           schema:
             $ref: '#/definitions/freelancer-input'
+        '400':
+          description: ''
+          schema:
+            $ref: '#/definitions/error-400'
+        '409':
+          description: ''
+          schema:
+            $ref: '#/definitions/error-409'
   /freelancers/v1:
     get:
       operationId: LIST-freelancers
@@ -53,6 +69,14 @@ paths:
             type: array
             items:
               $ref: '#/definitions/freelancer-input'
+        '400':
+          description: ''
+          schema:
+            $ref: '#/definitions/error-400'
+        '409':
+          description: ''
+          schema:
+            $ref: '#/definitions/error-409'
     post:
       operationId: POST-freelancer
       summary: Create Freelancer
@@ -62,13 +86,95 @@ paths:
         - name: body
           in: body
           schema:
-            $ref: '#/definitions/freelancer-input'
+            $ref: '#/definitions/freelancer-create-object'
       responses:
         '201':
           description: ''
           schema:
             $ref: '#/definitions/freelancer-input'
+        '400':
+          description: ''
+          schema:
+            $ref: '#/definitions/error-400'
+        '409':
+          description: ''
+          schema:
+            $ref: '#/definitions/error-409'
 definitions:
+  error-400:
+    title: error-400
+    $schema: 'http://json-schema.org/draft-04/schema#'
+    id: 4af6d3e3-a36d-4299-b59f-63011fe86724
+    type: object
+    properties:
+      message:
+        id: 'http://jsonschema.net/message'
+        description: Description intended for developer
+        type: string
+      errors:
+        id: 'http://jsonschema.net/errors'
+        description: List of detected errors
+        type: array
+        items:
+          type: object
+          properties:
+            field:
+              id: 'http://jsonschema.net/field'
+              type: string
+              description: JSON Pointer to the field in request body with a problem
+            code:
+              id: 'http://jsonschema.net/code'
+              type: string
+              description: Code that identifies the error
+              enum:
+                - MISSING_REQUIRED
+                - INVALID_EMAIL
+                - INVALID_DATE
+                - INVALID_NUMBER
+            message:
+              id: 'http://jsonschema.net/error_message'
+              description: Description intended for developer
+              type: string
+          required:
+            - field
+            - code
+            - message
+    required:
+      - message
+    example:
+      message: Validation Failed
+      errors:
+        - field: /name
+          code: MISSING_REQUIRED
+          message: Required field
+        - field: /email
+          code: INVALID_EMAIL
+          message: Invalid email
+  error-409:
+    title: error-409
+    $schema: 'http://json-schema.org/draft-04/schema#'
+    id: 78e3cc00-0313-4312-a4d1-bd67be669e94
+    type: object
+    properties:
+      message:
+        id: 'http://jsonschema.net/message'
+        description: Description intended for developer
+        type: string
+      code:
+        id: 'http://jsonschema.net/code'
+        type: string
+        description: Code that identifies the error
+        pattern: '^[A-Z_\d]+$'
+      cause:
+        id: 'http://jsonschema.net/resourceId'
+        type: string
+        description: URI of existing resource that caused the conflict
+    required:
+      - message
+      - code
+    example:
+      message: Operation Failed
+      code: DUPLICATE_ACCOUNT
   freelancer-input:
     title: Freelancer Input
     type: object
@@ -99,3 +205,26 @@ definitions:
       name: Bob
       rate: 100
       currentProjectId: 63492c09-8c36-4f3f-8920-f9c85d258174
+  freelancer-create-object:
+    title: Freelancer Create Object
+    type: object
+    properties:
+      name:
+        type: string
+        description: Name of the feeelancer
+        pattern: '^[A-Za-z0-9- ]+$'
+      rate:
+        type: number
+        description: Hourly rate of the freelancer
+        minimum: 0
+        maximum: 1000
+      currentProjectId:
+        type: string
+        description: The Current Project assigned to the freelancer
+        format: uuid
+    required:
+      - name
+      - rate
+    example:
+      name: Bob
+      rate: 100

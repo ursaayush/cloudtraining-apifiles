@@ -25,6 +25,14 @@ paths:
           description: ''
           schema:
             $ref: '#/definitions/project-input'
+        '400':
+          description: ''
+          schema:
+            $ref: '#/definitions/error-400'
+        '409':
+          description: ''
+          schema:
+            $ref: '#/definitions/error-409'
     put:
       operationId: PUT-project
       summary: Update project
@@ -47,6 +55,14 @@ paths:
           description: ''
           schema:
             $ref: '#/definitions/project-input'
+        '400':
+          description: ''
+          schema:
+            $ref: '#/definitions/error-400'
+        '409':
+          description: ''
+          schema:
+            $ref: '#/definitions/error-409'
   /projects/v1:
     get:
       operationId: LIST-projects
@@ -60,6 +76,14 @@ paths:
             type: array
             items:
               $ref: '#/definitions/project-input'
+        '400':
+          description: ''
+          schema:
+            $ref: '#/definitions/error-400'
+        '409':
+          description: ''
+          schema:
+            $ref: '#/definitions/error-409'
     post:
       operationId: POST-project
       summary: Create project
@@ -69,7 +93,7 @@ paths:
         - name: body
           in: body
           schema:
-            $ref: '#/definitions/project-input'
+            $ref: '#/definitions/project-create-object'
             example:
               id: 18b252ac-57c4-47a8-ba1b-b85b408e7431
               name: Web dashboard
@@ -82,7 +106,89 @@ paths:
           description: ''
           schema:
             $ref: '#/definitions/project-input'
+        '400':
+          description: ''
+          schema:
+            $ref: '#/definitions/error-400'
+        '409':
+          description: ''
+          schema:
+            $ref: '#/definitions/error-409'
 definitions:
+  error-400:
+    title: error-400
+    $schema: 'http://json-schema.org/draft-04/schema#'
+    id: 4af6d3e3-a36d-4299-b59f-63011fe86724
+    type: object
+    properties:
+      message:
+        id: 'http://jsonschema.net/message'
+        description: Description intended for developer
+        type: string
+      errors:
+        id: 'http://jsonschema.net/errors'
+        description: List of detected errors
+        type: array
+        items:
+          type: object
+          properties:
+            field:
+              id: 'http://jsonschema.net/field'
+              type: string
+              description: JSON Pointer to the field in request body with a problem
+            code:
+              id: 'http://jsonschema.net/code'
+              type: string
+              description: Code that identifies the error
+              enum:
+                - MISSING_REQUIRED
+                - INVALID_EMAIL
+                - INVALID_DATE
+                - INVALID_NUMBER
+            message:
+              id: 'http://jsonschema.net/error_message'
+              description: Description intended for developer
+              type: string
+          required:
+            - field
+            - code
+            - message
+    required:
+      - message
+    example:
+      message: Validation Failed
+      errors:
+        - field: /name
+          code: MISSING_REQUIRED
+          message: Required field
+        - field: /email
+          code: INVALID_EMAIL
+          message: Invalid email
+  error-409:
+    title: error-409
+    $schema: 'http://json-schema.org/draft-04/schema#'
+    id: 78e3cc00-0313-4312-a4d1-bd67be669e94
+    type: object
+    properties:
+      message:
+        id: 'http://jsonschema.net/message'
+        description: Description intended for developer
+        type: string
+      code:
+        id: 'http://jsonschema.net/code'
+        type: string
+        description: Code that identifies the error
+        pattern: '^[A-Z_\d]+$'
+      cause:
+        id: 'http://jsonschema.net/resourceId'
+        type: string
+        description: URI of existing resource that caused the conflict
+    required:
+      - message
+      - code
+    example:
+      message: Operation Failed
+      code: DUPLICATE_ACCOUNT
   project-input:
     title: project Input
     type: object
@@ -117,3 +223,33 @@ definitions:
       freelancers:
         - f664c3b8-11b6-434b-af43-0293064d80eb
         - 3018dbb6-cd6a-4a56-ac12-1c6695cb4562
+  project-create-object:
+    title: Project Create Object
+    type: object
+    properties:
+      name:
+        type: string
+        description: name of the project
+        pattern: '^[A-Za-z0-9- ]+$'
+      customerName:
+        type: string
+        description: Name of the customer for the project
+        pattern: '^[A-Za-z0-9- ]+$'
+      freelancers:
+        type: array
+        description: Freelancers working on this project
+        uniqueItems: true
+        items:
+          type: string
+          format: uuid
+    required:
+      - name
+      - customerName
+    example:
+      name: Web Dashboard
+      customerName: Acme Corp
+      freelancers:
+        - babcec9c-21e5-4d44-a272-c63a694edfc4
+        - 86785539-c45a-4ea7-ae64-78639a012198
+        - 0391bab6-c2a7-4fec-817c-bd8e9b59210e
+        - 96f35e87-08f0-4bc2-a0e5-20019189d44a

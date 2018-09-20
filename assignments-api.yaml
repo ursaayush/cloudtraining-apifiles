@@ -9,6 +9,50 @@ consumes:
 produces:
   - application/json
 paths:
+  /assignments/v1/:
+    get:
+      operationId: LIST-assignments
+      summary: List assignments
+      tags:
+        - Assignments
+      responses:
+        '200':
+          description: ''
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/assignment-input'
+        '400':
+          description: ''
+          schema:
+            $ref: '#/definitions/error-400'
+        '409':
+          description: ''
+          schema:
+            $ref: '#/definitions/error-409'
+    post:
+      operationId: POST-assignment
+      summary: Create assignment
+      tags:
+        - Assignments
+      parameters:
+        - name: body
+          in: body
+          schema:
+            $ref: '#/definitions/assignment-create-object'
+      responses:
+        '201':
+          description: ''
+          schema:
+            $ref: '#/definitions/assignment-input'
+        '400':
+          description: ''
+          schema:
+            $ref: '#/definitions/error-400'
+        '409':
+          description: ''
+          schema:
+            $ref: '#/definitions/error-409'
   '/assignments/v1/{id}':
     parameters:
       - name: id
@@ -25,35 +69,89 @@ paths:
           description: ''
           schema:
             $ref: '#/definitions/assignment-input'
-  /assignments/v1/:
-    get:
-      operationId: LIST-assignments
-      summary: List assignments
-      tags:
-        - Assignments
-      responses:
-        '200':
+        '400':
           description: ''
           schema:
-            type: array
-            items:
-              $ref: '#/definitions/assignment-input'
-    post:
-      operationId: POST-assignment
-      summary: Create assignment
-      tags:
-        - Assignments
-      parameters:
-        - name: body
-          in: body
-          schema:
-            $ref: '#/definitions/assignment-input'
-      responses:
-        '201':
+            $ref: '#/definitions/error-400'
+        '409':
           description: ''
           schema:
-            $ref: '#/definitions/assignment-input'
+            $ref: '#/definitions/error-409'
 definitions:
+  error-400:
+    title: error-400
+    $schema: 'http://json-schema.org/draft-04/schema#'
+    id: 4af6d3e3-a36d-4299-b59f-63011fe86724
+    type: object
+    properties:
+      message:
+        id: 'http://jsonschema.net/message'
+        description: Description intended for developer
+        type: string
+      errors:
+        id: 'http://jsonschema.net/errors'
+        description: List of detected errors
+        type: array
+        items:
+          type: object
+          properties:
+            field:
+              id: 'http://jsonschema.net/field'
+              type: string
+              description: JSON Pointer to the field in request body with a problem
+            code:
+              id: 'http://jsonschema.net/code'
+              type: string
+              description: Code that identifies the error
+              enum:
+                - MISSING_REQUIRED
+                - INVALID_EMAIL
+                - INVALID_DATE
+                - INVALID_NUMBER
+            message:
+              id: 'http://jsonschema.net/error_message'
+              description: Description intended for developer
+              type: string
+          required:
+            - field
+            - code
+            - message
+    required:
+      - message
+    example:
+      message: Validation Failed
+      errors:
+        - field: /name
+          code: MISSING_REQUIRED
+          message: Required field
+        - field: /email
+          code: INVALID_EMAIL
+          message: Invalid email
+  error-409:
+    title: error-409
+    $schema: 'http://json-schema.org/draft-04/schema#'
+    id: 78e3cc00-0313-4312-a4d1-bd67be669e94
+    type: object
+    properties:
+      message:
+        id: 'http://jsonschema.net/message'
+        description: Description intended for developer
+        type: string
+      code:
+        id: 'http://jsonschema.net/code'
+        type: string
+        description: Code that identifies the error
+        pattern: '^[A-Z_\d]+$'
+      cause:
+        id: 'http://jsonschema.net/resourceId'
+        type: string
+        description: URI of existing resource that caused the conflict
+    required:
+      - message
+      - code
+    example:
+      message: Operation Failed
+      code: DUPLICATE_ACCOUNT
   assignment-input:
     title: assignment Input
     type: object
@@ -69,7 +167,36 @@ definitions:
         type: string
         description: Project identifier for this assignment
         format: uuid
+      startDate:
+        type: string
+        format: date
+        description: The date when the assignment for the freelancer starts
     required:
       - id
       - freelancerId
       - projectId
+      - startDate
+  assignment-create-object:
+    title: assignment create object
+    type: object
+    properties:
+      freelancerId:
+        type: string
+        description: Freelancer to be assigned
+        format: uuid
+      projectId:
+        type: string
+        description: Project identifier for this assignment
+        format: uuid
+      startDate:
+        type: string
+        format: date
+        description: The date when the assignment for the freelancer starts
+    required:
+      - freelancerId
+      - projectId
+      - startDate
+    example:
+      freelancerId: 9827cde1-cb47-4119-921e-23de5c4f2fed
+      projectId: a03341a2-31a0-4be3-a081-655fd719eefc
+      startDate: '2018-11-01'
